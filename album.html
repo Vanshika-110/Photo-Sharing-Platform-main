@@ -1,0 +1,964 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momento — Album</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f6f5f1;
+            color: #252525;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        nav {
+            height: 75px;
+            padding: 0 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #deddd7;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 600;
+            letter-spacing: -1.5px;
+        }
+
+        .back {
+            font: 10px 'DM Mono', monospace;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 60px 25px;
+        }
+
+        .label {
+            font: 10px 'DM Mono', monospace;
+            color: #999;
+            letter-spacing: 2px;
+            margin-bottom: 17px;
+        }
+
+        .heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 45px;
+        }
+
+        h1 {
+            font-size: clamp(35px, 5vw, 55px);
+            font-weight: 500;
+            letter-spacing: -3px;
+        }
+
+        .description {
+            color: #888;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .upload-button {
+            display: inline-block;
+            background: #252525;
+            color: white;
+            padding: 15px 20px;
+            font: 10px 'DM Mono', monospace;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .upload-button:hover {
+            background: #555;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #deddd7;
+            border-bottom: 1px solid #deddd7;
+            padding: 18px 0;
+            margin-bottom: 25px;
+            color: #999;
+            font: 9px 'DM Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .photo {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: #eeede8;
+            border: 1px solid #deddd7;
+        }
+
+        .photo img,
+        .photo video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .view-media {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border: none;
+            background: #f6f5f1;
+            padding: 8px 10px;
+            cursor: pointer;
+            font: 9px 'DM Mono', monospace;
+        }
+
+        .photo-number {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            background: #f6f5f1;
+            padding: 7px 9px;
+            font: 9px 'DM Mono', monospace;
+        }
+
+        .remove {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            border: none;
+            background: #f6f5f1;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .media-dialog {
+            width: min(1000px, calc(100% - 32px));
+            max-width: none;
+            max-height: 100%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #444;
+            background: #171717;
+            color: #fff;
+        }
+
+        .media-dialog-content:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            max-height: 100vh;
+            padding: 24px;
+            border: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #171717;
+        }
+
+        .media-dialog::backdrop {
+            background: rgb(0 0 0 / 88%);
+        }
+
+        .media-dialog-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .media-dialog img,
+        .media-dialog video {
+            display: block;
+            max-width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .media-dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .media-dialog-actions button {
+            border: 1px solid #777;
+            padding: 10px 14px;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            font: 10px 'DM Mono', monospace;
+        }
+
+        .media-dialog-actions button:hover {
+            background: #333;
+        }
+
+        .media-dialog-actions button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        #mediaDialogStage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: min(75vh, 700px);
+            min-height: 0;
+            overflow: hidden;
+            touch-action: none;
+            cursor: grab;
+        }
+
+        #mediaDialogStage img {
+            transform-origin: center;
+            transition: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            cursor: zoom-in;
+        }
+
+        .media-dialog-content:fullscreen #mediaDialogStage {
+            height: calc(100vh - 150px);
+        }
+
+        #mediaDialogStage.is-zoomed {
+            cursor: grab;
+        }
+
+        #mediaDialogStage.is-dragging {
+            cursor: grabbing;
+        }
+
+        .zoom-hint {
+            color: #aaa;
+            font-size: 11px;
+        }
+
+        #mediaDialogMessage {
+            min-height: 1em;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .empty {
+            border: 1px solid #deddd7;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .empty h2 {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -1px;
+        }
+
+        .empty p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 12px;
+            line-height: 1.8;
+        }
+
+        .empty-caption {
+            margin-top: 25px;
+            color: #aaa;
+            font: 9px 'DM Mono', monospace;
+            letter-spacing: 1.5px;
+        }
+
+        footer {
+            margin-top: 100px;
+            padding: 25px 0;
+            border-top: 1px solid #deddd7;
+            display: flex;
+            justify-content: space-between;
+            color: #999;
+            font: 9px 'DM Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 650px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .heading {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="dashboard.html" class="logo">momento.</a>
+        <a href="dashboard.html" class="back">← ALL ALBUMS</a>
+    </nav>
+
+    <main>
+
+        <div class="heading">
+            <div>
+                <div class="label">YOUR MEMORY CARD / COLLECTION</div>
+                <h1 id="albumTitle">Your album.</h1>
+                <p class="description" id="albumDescription">
+                    All your favourite moments in one place.
+                </p>
+                <p id="inviteCode" class="description">
+    Invite Code: Loading...
+</p>
+            </div>
+
+            <label for="photoInput" class="upload-button">
+                + UPLOAD PHOTOS &amp; VIDEOS
+            </label>
+
+            <input
+                type="file"
+                id="photoInput"
+                accept="image/*,video/mp4,video/webm,video/quicktime,video/ogg,.m4v"
+                multiple
+                hidden
+            >
+        </div>
+
+        <div class="info">
+            <span>MEMORY COLLECTION</span>
+            <span id="photoCount">00 ITEMS</span>
+        </div>
+
+        <div class="empty" id="emptyState">
+            <h2>No memories yet.</h2>
+            <p>
+                The best memories are the ones you collect together.
+                Start adding your photographs and videos here.
+            </p>
+            <div class="empty-caption">
+                EMPTY FOLDER / READY FOR MEMORIES
+            </div>
+        </div>
+
+        <div class="gallery" id="gallery"></div>
+
+        <dialog class="media-dialog" id="mediaDialog" aria-label="View album media">
+            <div class="media-dialog-content">
+                <div id="mediaDialogStage"></div>
+                <div class="media-dialog-actions">
+                    <button type="button" id="mediaPrevious" aria-label="Previous item">← PREVIOUS</button>
+                    <span id="mediaPosition" aria-live="polite"></span>
+                    <button type="button" id="mediaNext" aria-label="Next item">NEXT →</button>
+                    <button type="button" id="mediaZoomOut" aria-label="Zoom out">−</button>
+                    <span id="mediaZoomLevel" aria-live="polite">100%</span>
+                    <button type="button" id="mediaZoomIn" aria-label="Zoom in">+</button>
+                    <button type="button" id="mediaZoomReset">RESET ZOOM</button>
+                    <button type="button" id="mediaFullscreen">FULL SCREEN</button>
+                    <button type="button" id="mediaDownload">DOWNLOAD</button>
+                    <button type="button" id="mediaClose">CLOSE</button>
+                </div>
+                <p class="zoom-hint">Use your trackpad pinch or scroll over a photo to zoom.</p>
+                <p id="mediaDialogMessage" role="status" aria-live="polite"></p>
+            </div>
+        </dialog>
+
+        <footer>
+            <span>MOMENTO © 2026</span>
+            <span>KEEP THE MOMENTS CLOSE.</span>
+        </footer>
+
+    </main>
+
+    
+<script type="module">
+import { supabase } from "./supabase.js";
+
+const params = new URLSearchParams(window.location.search);
+const albumId = params.get("id");
+
+const albumTitle = document.getElementById("albumTitle");
+const albumDescription = document.getElementById("albumDescription");
+const inviteCode = document.getElementById("inviteCode");
+const photoInput = document.getElementById("photoInput");
+const gallery = document.getElementById("gallery");
+const emptyState = document.getElementById("emptyState");
+const photoCount = document.getElementById("photoCount");
+const mediaDialog = document.getElementById("mediaDialog");
+const mediaDialogContent = document.querySelector(".media-dialog-content");
+const mediaDialogStage = document.getElementById("mediaDialogStage");
+const mediaDialogMessage = document.getElementById("mediaDialogMessage");
+const mediaFullscreen = document.getElementById("mediaFullscreen");
+const mediaDownload = document.getElementById("mediaDownload");
+const mediaPrevious = document.getElementById("mediaPrevious");
+const mediaNext = document.getElementById("mediaNext");
+const mediaPosition = document.getElementById("mediaPosition");
+const mediaZoomOut = document.getElementById("mediaZoomOut");
+const mediaZoomIn = document.getElementById("mediaZoomIn");
+const mediaZoomReset = document.getElementById("mediaZoomReset");
+const mediaZoomLevel = document.getElementById("mediaZoomLevel");
+let activeMedia = null;
+let activeMediaName = "";
+let mediaItems = [];
+let activeMediaIndex = -1;
+let mediaZoom = 1;
+let mediaPanX = 0;
+let mediaPanY = 0;
+let dragPointerId = null;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragPanStartX = 0;
+let dragPanStartY = 0;
+const MIN_MEDIA_ZOOM = 1;
+const MAX_MEDIA_ZOOM = 3;
+const MEDIA_ZOOM_STEP = 0.25;
+
+const BUCKET = "momento-photos";
+const VIDEO_EXTENSIONS = /\.(mp4|m4v|mov|webm|ogv)$/i;
+const VIDEO_CONTENT_TYPES = {
+    mp4: "video/mp4",
+    m4v: "video/mp4",
+    mov: "video/quicktime",
+    webm: "video/webm",
+    ogv: "video/ogg"
+};
+
+let currentUser = null;
+
+function isVideo(path) {
+    return VIDEO_EXTENSIONS.test(path);
+}
+
+function getVideoContentType(file) {
+    const extension = file.name.split(".").pop()?.toLowerCase();
+    return VIDEO_CONTENT_TYPES[extension] || file.type;
+}
+
+// Show errors on the page
+function showError(message) {
+    emptyState.style.display = "flex";
+    emptyState.innerHTML = `
+        <h2>Something went wrong.</h2>
+        <p>${message}</p>
+    `;
+}
+
+// Load album and photos
+async function loadAlbum() {
+    try {
+        if (!albumId) {
+            throw new Error("Album ID is missing from the URL.");
+        }
+
+        const { data: userData, error: userError } =
+            await supabase.auth.getUser();
+
+        if (userError) throw userError;
+
+        currentUser = userData.user;
+
+        if (!currentUser) {
+            window.location.href = "signup.html";
+            return;
+        }
+
+        // Get album details
+        const { data: album, error: albumError } = await supabase
+            .from("albums")
+            .select("*")
+            .eq("id", albumId)
+            .single();
+
+        if (albumError) throw albumError;
+
+        albumTitle.textContent = album.title;
+        albumDescription.textContent =
+            album.description || "All your favourite moments in one place.";
+            inviteCode.textContent = "Invite Code: " + album.invite_code;
+
+        // Get photos belonging to this album
+        await loadPhotos();
+
+    } catch (error) {
+        console.error("Album loading error:", error);
+        showError(error.message);
+        photoInput.disabled = true;
+    }
+}
+
+// Load photos from Supabase
+async function loadPhotos() {
+    const { data: photos, error } = await supabase
+        .from("photos")
+        .select("*")
+        .eq("album_id", albumId)
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    mediaItems = photos;
+    gallery.innerHTML = "";
+
+    photoCount.textContent =
+        String(photos.length).padStart(2, "0") + " ITEMS";
+
+    emptyState.style.display = photos.length === 0 ? "flex" : "none";
+
+    photos.forEach((photo, index) => {
+        const { data: imageData } = supabase.storage
+            .from(BUCKET)
+            .getPublicUrl(photo.storage_path);
+
+        const card = document.createElement("div");
+        card.className = "photo";
+
+        const video = isVideo(photo.storage_path);
+        const media = document.createElement(video ? "video" : "img");
+        media.src = imageData.publicUrl;
+        if (video) {
+            media.controls = true;
+            media.playsInline = true;
+            media.preload = "metadata";
+            media.setAttribute("aria-label", photo.caption || "Album video " + (index + 1));
+        } else {
+            media.alt = photo.caption || "Album photograph " + (index + 1);
+        }
+
+        const number = document.createElement("span");
+        number.className = "photo-number";
+        number.textContent =
+            "IMG_" + String(index + 1).padStart(3, "0");
+
+        const remove = document.createElement("button");
+        remove.className = "remove";
+        remove.textContent = "×";
+        remove.setAttribute("aria-label", video ? "Remove video" : "Remove photo");
+
+        const view = document.createElement("button");
+        view.className = "view-media";
+        view.type = "button";
+        view.textContent = "VIEW";
+        view.setAttribute("aria-label", `View ${video ? "video" : "photo"} ${index + 1}`);
+        view.addEventListener("click", () => {
+            if (video) media.pause();
+            showMedia(index);
+            mediaDialogMessage.textContent = "";
+            mediaDialog.showModal();
+        });
+
+        remove.addEventListener("click", async () => {
+            if (!confirm(`Are you sure you want to delete this ${video ? "video" : "photo"}?`)) {
+                return;
+            }
+
+            remove.disabled = true;
+
+            try {
+                // Delete image from Storage
+                const { error: storageError } = await supabase.storage
+                    .from(BUCKET)
+                    .remove([photo.storage_path]);
+
+                if (storageError) throw storageError;
+
+                // Delete photo record from database
+                const { error: databaseError } = await supabase
+                    .from("photos")
+                    .delete()
+                    .eq("id", photo.id);
+
+                if (databaseError) throw databaseError;
+
+                await loadPhotos();
+
+            } catch (error) {
+                console.error("Photo deletion error:", error);
+                alert("Could not delete photo: " + error.message);
+                remove.disabled = false;
+            }
+        });
+
+        card.append(media, number, view, remove);
+        gallery.appendChild(card);
+    });
+}
+
+function showMedia(index) {
+    if (index < 0 || index >= mediaItems.length) return;
+
+    if (activeMedia instanceof HTMLVideoElement) {
+        activeMedia.pause();
+    }
+
+    activeMediaIndex = index;
+    mediaZoom = 1;
+    mediaPanX = 0;
+    mediaPanY = 0;
+    const item = mediaItems[index];
+    const video = isVideo(item.storage_path);
+    const { data } = supabase.storage
+        .from(BUCKET)
+        .getPublicUrl(item.storage_path);
+
+    activeMedia = document.createElement(video ? "video" : "img");
+    activeMedia.src = data.publicUrl;
+    if (video) {
+        activeMedia.controls = true;
+        activeMedia.autoplay = true;
+        activeMedia.playsInline = true;
+    } else {
+        activeMedia.alt = item.caption || "Album photograph " + (index + 1);
+    }
+
+    activeMediaName = item.storage_path.split("/").pop() ||
+        `momento-${index + 1}${video ? ".mp4" : ".jpg"}`;
+    mediaDialogStage.replaceChildren(activeMedia);
+    mediaPosition.textContent = `${index + 1} / ${mediaItems.length}`;
+    mediaPrevious.disabled = mediaItems.length < 2;
+    mediaNext.disabled = mediaItems.length < 2;
+    const isPhoto = !video;
+    mediaZoomIn.disabled = !isPhoto;
+    mediaZoomOut.disabled = !isPhoto;
+    mediaZoomReset.disabled = !isPhoto;
+    updateMediaZoom();
+    mediaDialogMessage.textContent = "";
+}
+
+function updateMediaZoom() {
+    if (activeMedia instanceof HTMLImageElement) {
+        clampMediaPan();
+        activeMedia.style.transform =
+            `translate(${mediaPanX}px, ${mediaPanY}px) scale(${mediaZoom})`;
+        activeMedia.style.cursor =
+            mediaZoom > MIN_MEDIA_ZOOM ? "zoom-out" : "zoom-in";
+    }
+    mediaDialogStage.classList.toggle("is-zoomed", mediaZoom > MIN_MEDIA_ZOOM);
+
+    mediaZoomLevel.textContent = `${Math.round(mediaZoom * 100)}%`;
+    mediaZoomOut.disabled =
+        !(activeMedia instanceof HTMLImageElement) || mediaZoom <= MIN_MEDIA_ZOOM;
+    mediaZoomIn.disabled =
+        !(activeMedia instanceof HTMLImageElement) || mediaZoom >= MAX_MEDIA_ZOOM;
+    mediaZoomReset.disabled =
+        !(activeMedia instanceof HTMLImageElement) || mediaZoom === MIN_MEDIA_ZOOM;
+}
+
+function clampMediaPan() {
+    if (!(activeMedia instanceof HTMLImageElement)) {
+        mediaPanX = 0;
+        mediaPanY = 0;
+        return;
+    }
+
+    const maxX = Math.max(
+        0,
+        (activeMedia.offsetWidth * mediaZoom - mediaDialogStage.clientWidth) / 2
+    );
+    const maxY = Math.max(
+        0,
+        (activeMedia.offsetHeight * mediaZoom - mediaDialogStage.clientHeight) / 2
+    );
+    mediaPanX = Math.max(-maxX, Math.min(maxX, mediaPanX));
+    mediaPanY = Math.max(-maxY, Math.min(maxY, mediaPanY));
+}
+
+function changeMediaZoom(amount) {
+    if (!(activeMedia instanceof HTMLImageElement)) return;
+    setMediaZoom(mediaZoom + amount);
+}
+
+function setMediaZoom(zoom, anchorX, anchorY) {
+    if (!(activeMedia instanceof HTMLImageElement)) return;
+
+    const nextZoom = Math.min(MAX_MEDIA_ZOOM, Math.max(MIN_MEDIA_ZOOM, zoom));
+    if (anchorX !== undefined && anchorY !== undefined) {
+        const rect = mediaDialogStage.getBoundingClientRect();
+        const pointX = anchorX - rect.left - rect.width / 2;
+        const pointY = anchorY - rect.top - rect.height / 2;
+        const zoomRatio = nextZoom / mediaZoom;
+        mediaPanX = pointX - (pointX - mediaPanX) * zoomRatio;
+        mediaPanY = pointY - (pointY - mediaPanY) * zoomRatio;
+    } else if (nextZoom === MIN_MEDIA_ZOOM) {
+        mediaPanX = 0;
+        mediaPanY = 0;
+    }
+
+    mediaZoom = nextZoom;
+    updateMediaZoom();
+}
+
+function moveMedia(direction) {
+    if (mediaItems.length < 2) return;
+    const nextIndex =
+        (activeMediaIndex + direction + mediaItems.length) % mediaItems.length;
+    showMedia(nextIndex);
+}
+
+mediaPrevious.addEventListener("click", () => moveMedia(-1));
+mediaNext.addEventListener("click", () => moveMedia(1));
+mediaZoomOut.addEventListener("click", () => changeMediaZoom(-MEDIA_ZOOM_STEP));
+mediaZoomIn.addEventListener("click", () => changeMediaZoom(MEDIA_ZOOM_STEP));
+mediaZoomReset.addEventListener("click", () => {
+    if (!(activeMedia instanceof HTMLImageElement)) return;
+    setMediaZoom(1);
+});
+
+mediaDialogStage.addEventListener("wheel", (event) => {
+    if (!(activeMedia instanceof HTMLImageElement)) return;
+
+    event.preventDefault();
+    setMediaZoom(
+        mediaZoom * Math.exp(-event.deltaY * 0.002),
+        event.clientX,
+        event.clientY
+    );
+}, { passive: false });
+
+mediaDialogStage.addEventListener("pointerdown", (event) => {
+    if (!(activeMedia instanceof HTMLImageElement) ||
+        mediaZoom <= MIN_MEDIA_ZOOM ||
+        !event.isPrimary ||
+        event.button !== 0) {
+        return;
+    }
+
+    event.preventDefault();
+    dragPointerId = event.pointerId;
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    dragPanStartX = mediaPanX;
+    dragPanStartY = mediaPanY;
+    mediaDialogStage.classList.add("is-dragging");
+    mediaDialogStage.setPointerCapture(event.pointerId);
+});
+
+mediaDialogStage.addEventListener("pointermove", (event) => {
+    if (event.pointerId !== dragPointerId) return;
+
+    mediaPanX = dragPanStartX + event.clientX - dragStartX;
+    mediaPanY = dragPanStartY + event.clientY - dragStartY;
+    updateMediaZoom();
+});
+
+function stopMediaPan(event) {
+    if (event.pointerId !== dragPointerId) return;
+    dragPointerId = null;
+    mediaDialogStage.classList.remove("is-dragging");
+}
+
+mediaDialogStage.addEventListener("pointerup", stopMediaPan);
+mediaDialogStage.addEventListener("pointercancel", stopMediaPan);
+
+mediaDialog.addEventListener("keydown", (event) => {
+    if ((event.key === "+" || event.key === "=") &&
+        activeMedia instanceof HTMLImageElement) {
+        event.preventDefault();
+        changeMediaZoom(MEDIA_ZOOM_STEP);
+    } else if (event.key === "-" &&
+        activeMedia instanceof HTMLImageElement) {
+        event.preventDefault();
+        changeMediaZoom(-MEDIA_ZOOM_STEP);
+    } else if (event.key === "0" &&
+        activeMedia instanceof HTMLImageElement) {
+        event.preventDefault();
+        setMediaZoom(1);
+    } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        moveMedia(-1);
+    } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        moveMedia(1);
+    }
+});
+
+document.getElementById("mediaClose").addEventListener("click", () => {
+    mediaDialog.close();
+});
+
+mediaDialog.addEventListener("close", () => {
+    if (activeMedia instanceof HTMLVideoElement) {
+        activeMedia.pause();
+    }
+    activeMedia = null;
+    activeMediaIndex = -1;
+    mediaDialogStage.replaceChildren();
+    mediaDialogMessage.textContent = "";
+});
+
+mediaFullscreen.addEventListener("click", async () => {
+    if (!activeMedia) return;
+
+    try {
+        if (document.fullscreenElement === mediaDialogContent) {
+            await document.exitFullscreen();
+        } else {
+            await mediaDialogContent.requestFullscreen();
+        }
+    } catch (error) {
+        console.error("Fullscreen error:", error);
+        mediaDialogMessage.textContent =
+            "Could not enter full screen. Try using your browser's full-screen controls.";
+    }
+});
+
+mediaDownload.addEventListener("click", async () => {
+    if (!activeMedia) return;
+
+    mediaDownload.disabled = true;
+    mediaDialogMessage.textContent = "Preparing download...";
+    let downloadUrl;
+
+    try {
+        const response = await fetch(activeMedia.src);
+        if (!response.ok) {
+            throw new Error(`Download failed (${response.status}).`);
+        }
+
+        downloadUrl = URL.createObjectURL(await response.blob());
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = activeMediaName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        mediaDialogMessage.textContent = "Download started.";
+    } catch (error) {
+        console.error("Media download error:", error);
+        mediaDialogMessage.textContent =
+            "Could not download this file. Check your connection and try again.";
+    } finally {
+        if (downloadUrl) {
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+        }
+        mediaDownload.disabled = false;
+    }
+});
+
+// Upload photos to Supabase
+photoInput.addEventListener("change", async (event) => {
+    const files = Array.from(event.target.files);
+
+    if (!files.length) return;
+
+    photoInput.disabled = true;
+
+    try {
+        for (const file of files) {
+            const isImage = file.type.startsWith("image/");
+            const isVideoFile = VIDEO_EXTENSIONS.test(file.name);
+
+            if (!isImage && !isVideoFile) {
+                throw new Error(
+                    `"${file.name}" is not a supported image or video. Videos must be MP4, M4V, MOV, WebM, or OGV.`
+                );
+            }
+
+            // Create unique file path
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+
+            const filePath =
+                `${albumId}/${currentUser.id}/${crypto.randomUUID()}-${safeName}`;
+
+            // Upload media to Storage
+            const { error: uploadError } = await supabase.storage
+                .from(BUCKET)
+                .upload(filePath, file, {
+                    contentType: isVideoFile
+                        ? getVideoContentType(file)
+                        : file.type || undefined
+                });
+
+            if (uploadError) throw uploadError;
+
+            // The existing photos table stores both image and video file paths.
+            const { error: insertError } = await supabase
+                .from("photos")
+                .insert({
+                    album_id: albumId,
+                    uploader_id: currentUser.id,
+                    storage_path: filePath,
+                    caption: ""
+                });
+
+            if (insertError) {
+                // Clean up uploaded file if database insert fails
+                await supabase.storage.from(BUCKET).remove([filePath]);
+                throw insertError;
+            }
+        }
+
+        await loadPhotos();
+
+        alert("Photos and videos uploaded successfully!");
+
+    } catch (error) {
+        console.error("Photo upload error:", error);
+        alert("Media upload failed: " + error.message);
+
+        try {
+            await loadPhotos();
+        } catch (loadError) {
+            console.error(loadError);
+        }
+
+    } finally {
+        photoInput.value = "";
+        photoInput.disabled = false;
+    }
+});
+
+// Start
+loadAlbum();
+</script>
+
+</body>
+</html>

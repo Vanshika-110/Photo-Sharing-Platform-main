@@ -1,0 +1,569 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momento — Your Memories</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f6f5f1;
+            color: #252525;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        nav {
+            height: 75px;
+            padding: 0 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #deddd7;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 600;
+            letter-spacing: -1.5px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            font-size: 10px;
+            color: #999;
+            font-family: 'DM Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        .logout {
+            border: 1px solid #ccc;
+            padding: 9px 15px;
+            color: #555;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 65px 25px;
+        }
+
+        .welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 65px;
+            gap: 20px;
+        }
+
+        .small-label {
+            font: 10px 'DM Mono', monospace;
+            color: #999;
+            letter-spacing: 2px;
+            margin-bottom: 17px;
+        }
+
+        .welcome h1 {
+            font-size: clamp(35px, 5vw, 55px);
+            font-weight: 500;
+            letter-spacing: -3px;
+        }
+
+        .welcome p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .button {
+            display: inline-block;
+            background: #252525;
+            color: white;
+            padding: 14px 20px;
+            font: 10px 'DM Mono', monospace;
+            letter-spacing: 1px;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #555;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #deddd7;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+        }
+
+        .section-title h2 {
+            font-size: 19px;
+            font-weight: 500;
+        }
+
+        .section-title span {
+            font: 9px 'DM Mono', monospace;
+            color: #999;
+            letter-spacing: 1.5px;
+        }
+
+        /* EMPTY STATE */
+
+        .empty-state {
+            min-height: 330px;
+            border: 1px solid #deddd7;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 35px 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 23px;
+            font-weight: 500;
+            letter-spacing: -1px;
+        }
+
+        .empty-state p {
+            max-width: 360px;
+            color: #888;
+            font-size: 13px;
+            line-height: 1.8;
+            margin: 12px 0 23px;
+        }
+
+        .empty-caption {
+            font: 9px 'DM Mono', monospace;
+            color: #aaa;
+            letter-spacing: 1.5px;
+            margin-top: 25px;
+        }
+
+        /* ALBUM CARDS */
+
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .album-card {
+            border: 1px solid #deddd7;
+            padding: 25px;
+            min-height: 190px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: 0.2s;
+        }
+
+        .album-card:hover {
+            border-color: #999;
+            transform: translateY(-3px);
+        }
+
+        .album-number {
+            font: 9px 'DM Mono', monospace;
+            color: #aaa;
+            letter-spacing: 1.5px;
+        }
+
+        .album-card h3 {
+            font-size: 21px;
+            font-weight: 500;
+            letter-spacing: -1px;
+            margin: 20px 0 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .album-description {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .album-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            border-top: 1px solid #deddd7;
+            padding-top: 15px;
+            margin-top: 20px;
+            font: 9px 'DM Mono', monospace;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        footer {
+            margin-top: 100px;
+            padding: 25px 0;
+            border-top: 1px solid #deddd7;
+            display: flex;
+            justify-content: space-between;
+            color: #999;
+            font: 9px 'DM Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 700px) {
+            .albums-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            nav {
+                padding: 0 20px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            main {
+                padding: 45px 20px;
+            }
+
+            .welcome {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 45px;
+            }
+
+            .albums-grid {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="dashboard.html" class="logo">momento.</a>
+
+        <div class="nav-right">
+            <span>YOUR PRIVATE SPACE</span>
+            <a href="#" class="logout" id="logoutBtn">LOG OUT ↗</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <section class="welcome">
+            <div>
+                <div class="small-label">YOUR PERSONAL MEMORY SPACE / 001</div>
+                <h1>Welcome back<span id="userName">.</span></h1>
+                <p>A little space for all the moments worth keeping.</p>
+            </div>
+        </section>
+        <section style="margin-bottom: 55px;">
+    <div class="section-title">
+        <h2>Join an album</h2>
+        <span>SHARED MEMORIES</span>
+    </div>
+
+    <form id="joinAlbumForm" style="display:flex; gap:12px; flex-wrap:wrap;">
+        <input
+            type="text"
+            id="inviteInput"
+            placeholder="Enter your invite code"
+            aria-label="Album invite code"
+            autocomplete="off"
+            style="padding:14px; border:1px solid #deddd7; background:transparent; font-family:DM Mono; flex:1; min-width:200px;"
+        >
+
+        <button class="button" id="joinAlbumBtn" type="submit">
+            JOIN ALBUM ↗
+        </button>
+    </form>
+
+    <p id="joinMessage" role="status" aria-live="polite" style="font-size:12px; color:#888; margin-top:12px;"></p>
+</section>
+
+        <section>
+            
+<div class="section-title">
+    <h2>Your albums</h2>
+    <a href="create-album.html" class="button">
+        CREATE NEW ALBUM ↗
+    </a>
+</div>
+
+            <!-- Empty state appears when there are no albums -->
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <h2>No memories collected yet.</h2>
+
+                <p>
+                    Every beautiful collection starts somewhere.
+                    Create your first album and invite your favourite people.
+                </p>
+
+                <a href="create-album.html" class="button">
+                    CREATE YOUR FIRST ALBUM ↗
+                </a>
+
+                <div class="empty-caption">
+                    NO FILES FOUND / WAITING FOR MEMORIES
+                </div>
+            </div>
+
+            <!-- Created albums appear here -->
+            <div class="albums-grid" id="albumsGrid"></div>
+        </section>
+
+        <footer>
+            <span>MOMENTO © 2026</span>
+            <span>MADE FOR THE MOMENTS THAT MATTER.</span>
+        </footer>
+
+    </main>
+
+    
+<script type="module">
+import { supabase } from "./supabase.js";
+
+// Get dashboard elements
+const userName = document.getElementById("userName");
+const albumsGrid = document.getElementById("albumsGrid");
+const emptyState = document.getElementById("emptyState");
+const logoutBtn = document.getElementById("logoutBtn");
+const joinAlbumForm = document.getElementById("joinAlbumForm");
+const inviteInput = document.getElementById("inviteInput");
+const joinAlbumBtn = document.getElementById("joinAlbumBtn");
+const joinMessage = document.getElementById("joinMessage");
+
+joinAlbumForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const inviteCode = inviteInput.value.trim().toUpperCase();
+    joinMessage.textContent = "";
+
+    if (!inviteCode) {
+        joinMessage.textContent = "Enter an invite code to join an album.";
+        inviteInput.focus();
+        return;
+    }
+
+    joinAlbumBtn.disabled = true;
+    joinAlbumBtn.textContent = "JOINING...";
+
+    try {
+        const { data: userData, error: userError } =
+            await supabase.auth.getUser();
+
+        if (userError) throw userError;
+
+        const user = userData.user;
+
+        if (!user) {
+            window.location.href = "signup.html";
+            return;
+        }
+
+        const { data, error: joinError } = await supabase.rpc(
+            "join_album_by_invite_code",
+            { p_invite_code: inviteCode }
+        );
+
+        if (joinError) {
+            console.error("Join album RPC error:", joinError);
+            if (joinError.code === "PGRST202" || joinError.code === "42883") {
+                throw new Error(
+                    "The Supabase join function is not installed. Run join_album_by_invite_code.sql in the Supabase SQL Editor."
+                );
+            }
+            throw joinError;
+        }
+
+        const result = data?.[0];
+
+        if (!result) {
+            joinMessage.textContent = "That invite code was not found. Check the code and try again.";
+            return;
+        }
+
+        if (!result.joined) {
+            joinMessage.textContent = "You already have access to this album.";
+            return;
+        }
+
+        inviteInput.value = "";
+        joinMessage.textContent = "Album joined! It has been added to your albums.";
+        await loadDashboard();
+    } catch (error) {
+        console.error("Join album error:", error);
+        joinMessage.textContent = "Could not join album: " + error.message;
+    } finally {
+        joinAlbumBtn.disabled = false;
+        joinAlbumBtn.textContent = "JOIN ALBUM ↗";
+    }
+});
+
+// Load logged-in user and albums
+
+async function loadDashboard() {
+    try {
+        // Check logged-in user
+        const { data: userData, error: userError } =
+            await supabase.auth.getUser();
+
+        if (userError || !userData.user) {
+            window.location.href = "signup.html";
+            return;
+        }
+
+        const user = userData.user;
+
+        // Show user's name
+        const name = user.user_metadata?.full_name || "";
+        userName.textContent = name ? " " + name + "." : ".";
+
+        // Get albums created by this user
+        const { data: ownedAlbums, error: ownedError } = await supabase
+            .from("albums")
+            .select("id")
+            .eq("owner_id", user.id);
+
+        if (ownedError) throw ownedError;
+
+        // Get albums this user has joined
+        const { data: memberships, error: memberError } = await supabase
+            .from("album_members")
+            .select("album_id")
+            .eq("user_id", user.id);
+
+        if (memberError) throw memberError;
+
+        // Combine owned and joined album IDs
+        const albumIds = [
+            ...new Set([
+                ...(ownedAlbums || []).map(album => album.id),
+                ...(memberships || []).map(member => member.album_id)
+            ])
+        ];
+
+        albumsGrid.innerHTML = "";
+
+        // Show empty state
+        if (albumIds.length === 0) {
+            emptyState.style.display = "flex";
+            return;
+        }
+
+        // Fetch all accessible albums
+        const { data: albums, error: albumError } = await supabase
+            .from("albums")
+            .select("*")
+            .in("id", albumIds)
+            .order("created_at", { ascending: false });
+
+        if (albumError) throw albumError;
+
+        if (!albums || albums.length === 0) {
+            emptyState.style.display = "flex";
+            return;
+        }
+
+        emptyState.style.display = "none";
+
+        // Display albums
+        albums.forEach((album, index) => {
+            const card = document.createElement("article");
+            card.className = "album-card";
+
+            const top = document.createElement("div");
+
+            const number = document.createElement("div");
+            number.className = "album-number";
+            number.textContent = "COLLECTION / " +
+                String(index + 1).padStart(3, "0");
+
+            const title = document.createElement("h3");
+            title.textContent = album.title || "Untitled album";
+
+            const description = document.createElement("p");
+            description.className = "album-description";
+            description.textContent =
+                album.description || "A collection of little moments.";
+
+            top.append(number, title, description);
+
+            const meta = document.createElement("div");
+            meta.className = "album-meta";
+
+            const occasion = document.createElement("span");
+            occasion.textContent = "MOMENTO";
+
+            const date = document.createElement("span");
+            date.textContent = album.created_at
+                ? new Date(album.created_at).toLocaleDateString()
+                : "DATE NOT SET";
+
+            meta.append(occasion, date);
+            card.append(top, meta);
+
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", function () {
+                window.location.href =
+                    "album.html?id=" + encodeURIComponent(album.id);
+            });
+
+            albumsGrid.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Dashboard error:", error);
+        alert("Could not load your albums: " + error.message);
+    }
+}
+
+// Logout using Supabase
+logoutBtn.addEventListener("click", async function(event) {
+    event.preventDefault();
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+        alert("Logout failed: " + error.message);
+        return;
+    }
+
+    window.location.href = "index.html";
+});
+
+// Start dashboard
+loadDashboard();
+</script>
+
+</body>
+</html>

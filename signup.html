@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Momento</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f6f5f1;
+    color: #252525;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.top {
+    background: #252525;
+    color: white;
+    padding: 10px 6%;
+    display: flex;
+    justify-content: space-between;
+    font: 10px 'DM Mono', monospace;
+}
+
+nav {
+    padding: 22px 6%;
+    border-bottom: 1px solid #deddd7;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    text-decoration: none;
+    color: #252525;
+}
+
+.logo span {
+    color: #999;
+}
+
+.container {
+    min-height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 55px 20px;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 410px;
+}
+
+.eyebrow {
+    color: #888;
+    font: 10px 'DM Mono', monospace;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+}
+
+h1 {
+    font-size: 39px;
+    font-weight: 500;
+    letter-spacing: -2px;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 13px;
+    margin: 12px 0 30px;
+    line-height: 1.7;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #deddd7;
+    background: transparent;
+    margin-bottom: 20px;
+    outline: none;
+    font: 13px 'DM Sans', sans-serif;
+    border-radius: 2px;
+}
+
+input:focus {
+    border-color: #555;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    background: #252525;
+    color: white;
+    cursor: pointer;
+    font: 12px 'DM Mono', monospace;
+    border-radius: 2px;
+}
+
+button:hover {
+    background: #555;
+}
+
+.switch {
+    text-align: center;
+    margin-top: 24px;
+    color: #888;
+    font-size: 12px;
+}
+
+.switch a {
+    color: #252525;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.message {
+    font-size: 12px;
+    color: #777;
+    margin-top: 15px;
+    text-align: center;
+}
+
+footer {
+    padding: 22px 6%;
+    border-top: 1px solid #deddd7;
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font: 10px 'DM Mono', monospace;
+}
+
+@media(max-width: 500px) {
+    h1 {
+        font-size: 33px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top">
+    <span>MOMENTO / PHOTO DIARY</span>
+    <span>● REC 001</span>
+</div>
+
+<nav>
+    <a href="index.html" class="logo">momento<span>.</span></a>
+</nav>
+
+<main class="container">
+    <div class="form-box">
+
+        <div class="eyebrow">YOUR MEMORY SPACE STARTS HERE</div>
+
+        <h1 id="heading">Create your account.</h1>
+
+        <p class="subtitle" id="subtitle">
+            Join your people and start collecting
+            your favourite memories together.
+        </p>
+
+        <form id="authForm">
+
+            <div id="nameField">
+                <label for="name">Your name</label>
+                <input type="text" id="name" placeholder="Enter your name">
+            </div>
+
+            <label for="email">Email address</label>
+            <input type="email" id="email" placeholder="you@example.com" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="At least 6 characters" minlength="6" required>
+
+            <button type="submit" id="submitBtn">CREATE ACCOUNT ↗</button>
+
+            <p class="message" id="message"></p>
+        </form>
+
+        <div class="switch">
+            <span id="switchText">Already have an account?</span>
+            <a href="#" id="switchLink">Log in</a>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <span>MOMENTO © 2026</span>
+    <span>MADE TO REMEMBER.</span>
+</footer>
+
+<script type="module" src="auth.js"></script>
+</body>
+</html>
